@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <base target="_top">
+        <style>
+            table {
+                border-collapse: collapse;
+                table-layout:fixed;
+            }
+            table, td, th, input, select{
+                border: 1px solid black;
+                height: 20px;
+                width: 100%;
+            }
+            th {
+                background-color: #66d9ff;
+            }
+            #btn {
+                margin:0 ;
+                position: absolute;
+            }
+        </style>
+    </head>
+    <body>
+        <table style="width:100%">
+            <tr>
+                <th>時間</th>
+                <th>早</th>
+                <th>中</th>
+                <th>晚</th>                
+            </tr>
+            <tr>
+                <td>
+                    <select id="date" style="width:100%;"></select>
+                </td>
+                <td><input type="text" id="morning"></td>
+                <td><input type="text" id="midday"></td>
+                <td><input type="text" id="night"></td>                
+            </tr>
+        </table><br>
+        <table style="width:100%">
+            <tr>
+                <th>宵夜</th>
+                <th>其他(類別)</th>
+                <th>其他$</th>
+            </tr>
+            <tr>
+                <td><input type="text" id="midnightSnack"></td>
+                <td>
+                    <select id="exclass" style="width:100%;">
+                        <option value="exclass_a">書錢</option>
+                        <option value="exclass_b">飲料</option>
+                        <option value="exclass_c">糧食</option>
+                        <option value="exclass_d">雜物</option>
+                    </select>
+                </td>
+                <td><input type="text" id="exmoney"></td>
+            </tr>
+        </table>
+        
+        <script>
+            function showData(a) {
+                var list = "";
+                var i;
+                for(i=0; i<a.length; i++){
+                    list += "<option value='" + a[i] + "'>" + a[i] + "</option>";
+                }
+                document.getElementById('date').innerHTML = list; 
+            }
+          
+            google.script.run.withSuccessHandler(showData).getDate();
+
+        </script>
+        <br>
+        <div id="btn">
+            <button type="button">輸入</button>
+        </div>
+    </body>
+</html>
+
+
+
