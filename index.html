@@ -9,8 +9,9 @@
             }
             table, td, th, input, select{
                 border: 1px solid black;
-                height: 20px;
+                height: 30px;
                 width: 100%;
+				font-size:10px;
             }
             th {
                 background-color: #66d9ff;
@@ -21,44 +22,49 @@
             }
         </style>
     </head>
-    <body>
-        <table style="width:100%">
-            <tr>
-                <th>時間</th>
-                <th>早</th>
-                <th>中</th>
-                <th>晚</th>                
-            </tr>
-            <tr>
-                <td>
-                    <select id="date" style="width:100%;"></select>
-                </td>
-                <td><input type="text" id="morning"></td>
-                <td><input type="text" id="midday"></td>
-                <td><input type="text" id="night"></td>                
-            </tr>
-        </table><br>
-        <table style="width:100%">
-            <tr>
-                <th>宵夜</th>
-                <th>其他(類別)</th>
-                <th>其他$</th>
-            </tr>
-            <tr>
-                <td><input type="text" id="midnightSnack"></td>
-                <td>
-                    <select id="exclass" style="width:100%;">
-                        <option value="exclass_a">書錢</option>
-                        <option value="exclass_b">飲料</option>
-                        <option value="exclass_c">糧食</option>
-                        <option value="exclass_d">雜物</option>
-                    </select>
-                </td>
-                <td><input type="text" id="exmoney"></td>
-            </tr>
-        </table>
-        
+    <body onload="init()">
+		<form id="myform" method="get">
+        	<table style="width:100%" >
+				<tr>
+					<th>時間</th>
+                	<th>用途</th>
+                	<th>金額</th>        
+            	</tr>
+            	<tr>
+					<td><input type="date" id="date"></td>
+                	<td id="use">
+                        <select id="mclass" style="width:100%; visibility: inline" onchange="changeFunc(value==5);">
+                            <option>--</option>
+                            <option value="5">新增選項 + </option>
+                            <option>早餐</option>
+							<option>中餐</option>
+							<option>晚餐</option>
+							<option>宵夜</option>
+						</select>
+						<div id="addtag" style="display:none;"><input type="text" placeholder=" New Tag" id="newclass"></div>
+					</td>
+					<td><input type="text" id='money'></td>
+            	</tr>
+        	</table><br>
+        <div id="test"></div>
         <script>
+            function init(){
+                google.script.run.init();
+                google.script.run.withSuccessHandler(add2).ckclass();
+                google.script.run.withSuccessHandler(total).getMrow();
+            }
+			function changeFunc(a) {
+				if(a==true) {
+					var parent = document.getElementById("use");
+    				var child = document.getElementById('mclass');
+					parent.removeChild(child);
+					document.getElementById('addtag').style.display='inline';
+				}
+   			}
+			
+			document.getElementById('date').valueAsDate = new Date();
+            
+            /*
             function showData(a) {
                 var list = "";
                 var i;
@@ -67,14 +73,68 @@
                 }
                 document.getElementById('date').innerHTML = list; 
             }
-          
+            
             google.script.run.withSuccessHandler(showData).getDate();
+            */
+            
+            function add(){
+                var date = document.getElementById('date').value;
+                var e = document.getElementById('mclass');
+                //alert(e);
+                var money = document.getElementById('money').value;
+                if(money==""){
+                    alert("請輸入金額");
+                    //break;
+                }
+				if(e==null){
+					var addclass = document.getElementById('newclass').value;
+					//alert(addclass);
+					google.script.run.addtag(date,addclass,money);
+				}else{
+					var myclass = e.options[e.selectedIndex].text;
+					//alert(myclass);
+					google.script.run.addtag(date,myclass,money);
+				}
+                /*var total = google.script.run.total();
+                document.getElementById('total').innerHTML="100";*/
+                var t = Number(document.getElementById('total').innerHTML);
+                t+=Number(money);
+                document.getElementById('total').innerHTML=t;
+            }
+            function add2(a){           //  a  is  [][]
+                //alert(a[0]);
+                a.splice(0, 4);
+                //alert(a[0]);
+                
+                for(var i =0;i<a.length;i++){
+                    //alert(a[i][0]);
+                    if(a[i][0]!="早餐" && a[i][0]!="中餐" && a[i][0]!="晚餐" && a[i][0]!="宵夜"){
+                        var root = document.getElementById('mclass');
+                        var x = document.createElement("OPTION");
+                        var t = document.createTextNode(a[i][0]);
+                        x.appendChild(t);
+                        root.appendChild(x);
+                    }
+                }
+                
+            }
+            
+            function total(a){
+                var t = 0;
+                for(var i =0;i<a.length;i++){
+                    //alert(a[i][0]);
+                    t+=Number(a[i][0]);
+                }
+                document.getElementById('total').innerHTML=t;
+            }
 
         </script>
         <br>
         <div id="btn">
-            <button type="button">輸入</button>
+            <button type="button" name='t' onclick="add()">輸入</button>
         </div>
+        <br><br>
+        本月已花 : <a id="total"></a> 元
     </body>
 </html>
 
